@@ -1,6 +1,6 @@
 
 class OstReload {
-    static [string[]] $exemptUsers = "Administrator", "LogMeInRemoteUser", "Public", "gblackburnadmin"
+    static [string[]] $exemptUsers = "Administrator", "AzureAdmin", "LogMeInRemoteUser", "Public", "gblackburnadmin"
 
     hidden [string]$machineName 
     hidden [string] $currentUser 
@@ -15,6 +15,7 @@ class OstReload {
     }
 
     [void] start() {
+        $this.exemptMachineName()
         Clear-Host
         $this.prompt()
     }
@@ -29,6 +30,7 @@ class OstReload {
             $this.deleteOst()
 	    }
 	    elseif (($bool -eq 'n') -or ($bool -eq 'no')) {
+            [OstReload]::exemptUsers += $this.currentUser
             $this.userList = $this.getUserOptions()
             $this.currentUser = $this.userList[[OstReload]::getSelection($this.userList)]
             $this.printCurrentUser()
@@ -73,7 +75,7 @@ class OstReload {
 
         [string[]]$userOptions = @(
             for ($i = 0; $i -lt $this.localUsers.Length; $i++) {
-                if (($this.localUsers[$i] -eq $this.currentUser) -or ([OstReload]::exemptUsers -contains $this.localUsers[$i])) {
+                if ([OstReload]::exemptUsers -contains $this.localUsers[$i]) {
                     continue
                 }
                 else {
@@ -126,6 +128,11 @@ class OstReload {
 
     hidden [void] printCurrentUser() {
         Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
+    }
+
+    hidden [void] exemptMachineName() {
+        $tempName = $this.machineName + '$'
+        [OstReload]::exemptUsers += $tempName
     }
 }
 
