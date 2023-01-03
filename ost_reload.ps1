@@ -100,7 +100,7 @@ class OstReload {
     }
 
     static [int] getSelection() {
-        [int]$ans = Read-Host 'Select an option from above by entering the number associated with the selection'
+        [int]$ans = Read-Host 'Select an option from above by entering the number associated with the desired selection (default is 0)'
         return $ans
     }
 
