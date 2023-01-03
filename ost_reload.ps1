@@ -84,6 +84,18 @@ class OstReload {
         return $userOptions
     }
 
+    static [int] getSelection([string[]]$menuOptions) {
+        [OstReload]::printMenu($menuOptions)
+        [int]$answer = Read-Host 'Select an option from above by entering the number associated with the desired selection (default is 0)'
+        if ([OstReload]::validateMenuSelection($answer, $menuOptions) -eq $false) {
+            Clear-Host
+            Write-Host "Let's try that again..."
+            Start-Sleep -m 500
+            return [OstReload]::getSelection($menuOptions)
+        }
+        return $answer
+    }
+
 ################ End Getters ###########################
 
     hidden static [string[]] makeMenu([string[]]$menuItems) {
@@ -99,22 +111,6 @@ class OstReload {
         return $menu
     }
 
-    static [int] getSelection([string[]]$menuOptions) {
-        [OstReload]::printMenu($menuOptions)
-        [int]$answer = Read-Host 'Select an option from above by entering the number associated with the desired selection (default is 0)'
-        if ([OstReload]::validateMenuSelection($answer, $menuOptions) -eq $false) {
-            Clear-Host
-            Write-Host "Let's try that again..."
-            Start-Sleep -m 500
-            return [OstReload]::getSelection($menuOptions)
-        }
-        return $answer
-    }
-
-    hidden [void] printCurrentUser() {
-        Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
-    }
-
     static [void] printMenu([string[]]$menuOptions) {
         foreach ($option in [OstReload]::makeMenu($menuOptions)) {
             Write-Host $option
@@ -127,10 +123,11 @@ class OstReload {
         }
         else { return $false }
     }
+
+    hidden [void] printCurrentUser() {
+        Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
+    }
 }
 
 [OstReload]$session = [OstReload]::new()
 $session.start()
-
-
-## $session.start()
