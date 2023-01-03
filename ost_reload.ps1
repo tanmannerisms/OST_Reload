@@ -92,6 +92,7 @@ class OstReload {
             foreach ($item in $menuItems) {
                 $item = '[' + $i + '] ' + $item
                 $item
+                $i++
             }
         )
 
