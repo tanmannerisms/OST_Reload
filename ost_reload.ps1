@@ -24,7 +24,8 @@ class OstReload {
 	    $bool = Read-Host
         
 	    if (($bool -eq 'y') -or ($bool -eq 'yes')) {
-		    Write-Host 
+		    Write-Host "Let's begin"
+            [OstReload]::deleteOst()
 	    }
 	    elseif (($bool -eq 'n') -or ($bool -eq 'no')) {
     		
@@ -34,6 +35,13 @@ class OstReload {
             [OstReload]::prompt()
 	    }
     }
+
+
+    hidden [void] deleteOst() {
+        cd C:\Users\$this.currentUser\Appdata\Local\Microsoft\Outlook
+    }
+    
+    ## Getters ##
 
     static [int] getSelection([int[]]$options) {
         return 0
