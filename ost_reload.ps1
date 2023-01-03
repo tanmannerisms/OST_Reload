@@ -101,6 +101,9 @@ class OstReload {
         [OstReload]::printMenu($menuOptions)
         [int]$answer = Read-Host 'Select an option from above by entering the number associated with the desired selection (default is 0)'
         if ([OstReload]::validateMenuSelection($answer, $menuOptions) -eq $false) {
+            Clear-Host
+            Write-Host "Let's try that again..."
+            Start-Sleep -m 500
             return [OstReload]::getSelection($menuOptions)
         }
         return $answer
