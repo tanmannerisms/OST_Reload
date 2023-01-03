@@ -13,6 +13,11 @@ class OstReload {
         $this.machineName = (Get-CimInstance -ClassName Win32_ComputerSystem).Name
         $this.localUsers = @((Get-ChildItem C:\Users).Name)
     }
+
+    [void] start() {
+        Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
+        [OstReload]::prompt()
+    }
    
     static [void] prompt() {
 	    Write-Host "Is this the correct user? Enter y/n`n"
@@ -34,11 +39,6 @@ class OstReload {
         return 0
     }
 
-
-    [void] start() {
-        Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
-        [OstReload]::prompt()
-    }
 
     hidden [string] getCurrentUser() {
 	    return $this.currentUser
