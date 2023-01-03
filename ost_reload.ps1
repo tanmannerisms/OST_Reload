@@ -100,8 +100,8 @@ class OstReload {
     static [int] getSelection([string[]]$menuOptions) {
         [OstReload]::printMenu($menuOptions)
         [int]$answer = Read-Host 'Select an option from above by entering the number associated with the desired selection (default is 0)'
-        if ([OstReload]::validateMenuSelection(($answer, $menuOptions) -eq $false) {
-            [OstReload]::getSelection($menuOptions)
+        if ([OstReload]::validateMenuSelection($answer, $menuOptions) -eq $false) {
+            return [OstReload]::getSelection($menuOptions)
         }
         return $answer
     }
@@ -116,7 +116,7 @@ class OstReload {
         }
     }
 
-    static [boolean] validateMenuSelection(([int]$answer, [string[]]$menuOptions) {
+    static [boolean] validateMenuSelection([int]$answer, [string[]]$menuOptions) {
         if (($answer -lt $menuOptions.Length) -and ($answer -ge 0)) {
             return $true
         }
