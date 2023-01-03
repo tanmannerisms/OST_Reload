@@ -63,8 +63,7 @@ class OstReload {
         Stop-Process -Name "Outlook" -Force
     }
     
-    ## Getters ##
-
+############### Start Getters ###############
 
     hidden [string] getCurrentUser() {
 	    return $this.currentUser
@@ -86,6 +85,8 @@ class OstReload {
         )
         return $userOptions
     }
+
+################ End Getters ###########################
 
     hidden static [string[]] makeMenu([string[]]$menuItems) {
         [int]$i = 0
