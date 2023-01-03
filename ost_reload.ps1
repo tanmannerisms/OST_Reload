@@ -16,11 +16,11 @@ class OstReload {
 
     [void] start() {
         clear
-        Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
         $this.prompt()
     }
    
     hidden [void] prompt() {
+        Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
 	    Write-Host "Is this the correct user? Enter y/n"
 	    $bool = Read-Host
         
@@ -29,11 +29,12 @@ class OstReload {
             $this.deleteOst()
 	    }
 	    elseif (($bool -eq 'n') -or ($bool -eq 'no')) {
-            Write-Host $this.getUserOptions()
+            $this.userList = [OstReload]::makeMenu($this.getUserOptions())
+            Write-Host $this.userList
 	    }
 	    else {
 		    Write-Host "Oops, wrong option. Try again."
-            $this.prompt()
+            $this.start()
         }
     }
 
@@ -62,10 +63,6 @@ class OstReload {
     
     ## Getters ##
 
-    static [int] getSelection([int[]]$options) {
-        return 0
-    }
-
 
     hidden [string] getCurrentUser() {
 	    return $this.currentUser
@@ -76,20 +73,33 @@ class OstReload {
 
         [int]$menuCount = 0
         [string[]]$userOptions = @(
-            [string]$user = 'null'
-
             for ($i = 0; $i -lt $this.localUsers.Length; $i++) {
                 if (($this.localUsers[$i] -eq $this.currentUser) -or ([OstReload]::exemptUsers -contains $this.localUsers[$i])) {
                     continue
                 }
                 else {
-                    $user = '[' + $menuCount + ']' + $this.localUsers[$i]
-                    $menuCount++
-                    $user
+                    $this.localUsers[$i]
                 }
             }
         )
         return $userOptions
+    }
+
+     static [string[]] makeMenu([string[]]$menuItems) {
+        [int]$i = 0
+        [string[]]$menu = @(
+            foreach ($item in $menuItems) {
+                $item = '[' + $i + '] ' + $item
+                $item
+            }
+        )
+
+        return $menu
+    }
+
+    static [int] getSelection($options) {
+        [int]$ans = Read-Host 'Select an option from above by entering the number associated with the selection'
+        return $ans
     }
 }
 
