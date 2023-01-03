@@ -38,7 +38,20 @@ class OstReload {
 
 
     hidden [void] deleteOst() {
+        [OstReload]::stopOutlook()
         cd C:\Users\$this.currentUser\Appdata\Local\Microsoft\Outlook
+        Get-ChildItem -Filter "OLD - $this.currentUser*" | Remove-Item
+        Start-Sleep -m 1000
+        Get-ChildItem -Filter "$this.currentUser*" | Rename-Item -NewName {$_.Name -replace "^", "OLD - "}
+        [OstReload]::startOutlook()
+    }
+
+    static [void] startOutlook() {
+        Start-Process Outlook.exe
+    }
+
+    static [void] stopOutlook() {
+        Stop-Process -Name "Outlook" -Force
     }
     
     ## Getters ##
