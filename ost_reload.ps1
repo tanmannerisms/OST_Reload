@@ -15,7 +15,7 @@ class OstReload {
     }
 
     [void] start() {
-        clear
+        Clear-Host
         $this.prompt()
     }
    
@@ -48,7 +48,7 @@ class OstReload {
 
         [OstReload]::stopOutlook()
         
-        cd $dir
+        Set-Location $dir
         Get-ChildItem -Filter $backup | Remove-Item
         Start-Sleep -m 1000
         Get-ChildItem -Filter $ostFile | Rename-Item -NewName {$_.Name -replace "^", "OLD - "}
@@ -70,9 +70,8 @@ class OstReload {
     }
     
     hidden [string[]] getUserOptions() {
-        clear
+        Clear-Host
 
-        [int]$menuCount = 0
         [string[]]$userOptions = @(
             for ($i = 0; $i -lt $this.localUsers.Length; $i++) {
                 if (($this.localUsers[$i] -eq $this.currentUser) -or ([OstReload]::exemptUsers -contains $this.localUsers[$i])) {
