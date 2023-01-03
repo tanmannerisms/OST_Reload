@@ -30,7 +30,7 @@ class OstReload {
 	    }
 	    elseif (($bool -eq 'n') -or ($bool -eq 'no')) {
             $this.userList = $this.getUserOptions()
-            [OstReload]::printMenu([OstReload]::makeMenu($this.userList))
+            [OstReload]::printMenu($this.userList)
             $this.currentUser = $this.userList[[OstReload]::getSelection()]
             $this.printCurrentUser()
 	    }
@@ -110,7 +110,7 @@ class OstReload {
     }
 
     static [void] printMenu([string[]]$menuOptions) {
-        foreach ($option in $menuOptions) {
+        foreach ($option in [OstReload]::makeMenu($menuOptions)) {
             Write-Host $option
         }
     }
