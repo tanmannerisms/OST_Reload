@@ -28,7 +28,7 @@ class OstReload {
             $this.deleteOst()
 	    }
 	    elseif (($bool -eq 'n') -or ($bool -eq 'no')) {
-    		
+    		$this.getLocalUsers()
 	    }
 	    else {
 		    Write-Host "Oops, wrong option. Try again."
@@ -70,14 +70,16 @@ class OstReload {
 	    return $this.currentUser
     }
     
-    hidden [string[]] getLocalUsers($currentUser) {
-        $this.localUsers = @((Get-ChildItem C:\Users).Name)
-
-        Write-Host
+    hidden [string[]] getLocalUsers() {
+        [int]$menuCount = 0
 
         for ($i = 0; $i -lt $this.localUsers.Length; $i++) {
-            if ($this.localUsers[$i] -contains [OstReload]::exemptUsers -or $this.currentUser) {
-                
+            if ([OstReload]::exemptUsers -contains $this.localUsers[$i] -or $this.currentUser) {
+                continue
+            }
+            else {
+                Write-Host '[' + $menuCount + ']' + $this.localUsers[$i]
+                $menuCount++
             }
         }
         return $this.localUsers
