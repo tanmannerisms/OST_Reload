@@ -20,7 +20,7 @@ class OstReload {
     }
    
     hidden [void] prompt() {
-        Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
+        $this.printCurrentUser()
 	    Write-Host "Is this the correct user? Enter y/n"
 	    $bool = Read-Host
         
@@ -31,6 +31,8 @@ class OstReload {
 	    elseif (($bool -eq 'n') -or ($bool -eq 'no')) {
             $this.userList = [OstReload]::makeMenu($this.getUserOptions())
             Write-Host $this.userList
+            $this.currentUser = $this.userList[[OstReload]::getSelection()]
+            $this.printCurrentUser()
 	    }
 	    else {
 		    Write-Host "Oops, wrong option. Try again."
@@ -85,7 +87,7 @@ class OstReload {
         return $userOptions
     }
 
-     static [string[]] makeMenu([string[]]$menuItems) {
+    hidden static [string[]] makeMenu([string[]]$menuItems) {
         [int]$i = 0
         [string[]]$menu = @(
             foreach ($item in $menuItems) {
@@ -97,9 +99,13 @@ class OstReload {
         return $menu
     }
 
-    static [int] getSelection($options) {
+    static [int] getSelection() {
         [int]$ans = Read-Host 'Select an option from above by entering the number associated with the selection'
         return $ans
+    }
+
+    hidden [void] printCurrentUser() {
+        Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
     }
 }
 
