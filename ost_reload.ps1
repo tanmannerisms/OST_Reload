@@ -30,8 +30,7 @@ class OstReload {
 	    }
 	    elseif (($bool -eq 'n') -or ($bool -eq 'no')) {
             $this.userList = $this.getUserOptions()
-            [OstReload]::printMenu($this.userList)
-            $this.currentUser = $this.userList[[OstReload]::getSelection()]
+            $this.currentUser = $this.userList[[OstReload]::getSelection($this.userList)]
             $this.printCurrentUser()
 	    }
 	    else {
@@ -47,7 +46,6 @@ class OstReload {
         [string]$ostFile = $this.currentUser + '*'
 
         [OstReload]::stopOutlook()
-        
         Set-Location $dir
         Get-ChildItem -Filter $backup | Remove-Item
         Start-Sleep -m 1000
@@ -99,9 +97,13 @@ class OstReload {
         return $menu
     }
 
-    static [int] getSelection() {
-        [int]$ans = Read-Host 'Select an option from above by entering the number associated with the desired selection (default is 0)'
-        return $ans
+    static [int] getSelection([string[]]$menuOptions) {
+        [OstReload]::printMenu($menuOptions)
+        [int]$answer = Read-Host 'Select an option from above by entering the number associated with the desired selection (default is 0)'
+        if ([OstReload]::validateSelection($answer, $menuOptions) -eq $false) {
+            [OstReload]::getSelection($menuOptions)
+        }
+        return $answer
     }
 
     hidden [void] printCurrentUser() {
@@ -112,6 +114,13 @@ class OstReload {
         foreach ($option in [OstReload]::makeMenu($menuOptions)) {
             Write-Host $option
         }
+    }
+
+    static [boolean] validateSelection([int]$answer, [string[]]$menuOptions) {
+        if (($answer -lt $menuOptions.Length) -and ($answer -ge 0)) {
+            return $true
+        }
+        else { return $false }
     }
 }
 
