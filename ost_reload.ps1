@@ -29,8 +29,8 @@ class OstReload {
             $this.deleteOst()
 	    }
 	    elseif (($bool -eq 'n') -or ($bool -eq 'no')) {
-            $this.userList = [OstReload]::makeMenu($this.getUserOptions())
-            Write-Host $this.userList
+            $this.userList = $this.getUserOptions()
+            [OstReload]::printMenu([OstReload]::makeMenu($this.userList))
             $this.currentUser = $this.userList[[OstReload]::getSelection()]
             $this.printCurrentUser()
 	    }
@@ -107,6 +107,12 @@ class OstReload {
 
     hidden [void] printCurrentUser() {
         Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
+    }
+
+    static [void] printMenu([string[]]$menuOptions) {
+        foreach ($option in $menuOptions) {
+            Write-Host $option
+        }
     }
 }
 
