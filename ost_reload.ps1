@@ -36,14 +36,8 @@ class OstReload {
 
 
     [void] start() {
-        $this.setCurrentUser()
-    }
-
-
-    hidden [void] setCurrentUser() {
         Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
         [OstReload]::prompt()
-
     }
 
     hidden [string] getCurrentUser() {
