@@ -16,33 +16,38 @@ class OstReload {
 
     [void] start() {
         Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
-        [OstReload]::prompt()
+        $this.prompt()
     }
    
-    static [void] prompt() {
-	    Write-Host "Is this the correct user? Enter y/n`n"
+    hidden [void] prompt() {
+	    Write-Host "Is this the correct user? Enter y/n"
 	    $bool = Read-Host
         
 	    if (($bool -eq 'y') -or ($bool -eq 'yes')) {
 		    Write-Host "Let's begin"
-            [OstReload]::deleteOst()
+            $this.deleteOst()
 	    }
 	    elseif (($bool -eq 'n') -or ($bool -eq 'no')) {
     		
 	    }
 	    else {
 		    Write-Host "Oops, wrong option. Try again."
-            [OstReload]::prompt()
-	    }
+            $this.prompt()
+        }
     }
 
 
     hidden [void] deleteOst() {
+        [string]$dir = 'C:\Users\' + $this.currentUser + '\Appdata\Local\Microsoft\Outlook'
+        [string]$backup = "OLD - " + $this.currentUser + "*"
+        [string]$ostFile = $this.currentUser + '*'
+
         [OstReload]::stopOutlook()
-        cd C:\Users\$this.currentUser\Appdata\Local\Microsoft\Outlook
-        Get-ChildItem -Filter "OLD - $this.currentUser*" | Remove-Item
+        
+        cd $dir
+        Get-ChildItem -Filter $backup | Remove-Item
         Start-Sleep -m 1000
-        Get-ChildItem -Filter "$this.currentUser*" | Rename-Item -NewName {$_.Name -replace "^", "OLD - "}
+        Get-ChildItem -Filter $ostFile | Rename-Item -NewName {$_.Name -replace "^", "OLD - "}
         [OstReload]::startOutlook()
     }
 
