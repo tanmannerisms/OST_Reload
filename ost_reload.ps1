@@ -8,7 +8,7 @@ class OstReload {
     hidden [string[]]$userList
 
     ## Constructor ##
-    Device() {
+    OstReload() {
         $this.currentUser = ((Get-CimInstance -ClassName Win32_ComputerSystem).Username).Split('\')[1]
         $this.machineName = (Get-CimInstance -ClassName Win32_ComputerSystem).Name
         $this.localUsers = @((Get-ChildItem C:\Users).Name)
