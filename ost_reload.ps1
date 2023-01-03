@@ -32,6 +32,7 @@ class OstReload {
             $this.userList = $this.getUserOptions()
             $this.currentUser = $this.userList[[OstReload]::getSelection($this.userList)]
             $this.printCurrentUser()
+            $this.deleteOst()
 	    }
 	    else {
 		    Write-Host "Oops, wrong option. Try again."
