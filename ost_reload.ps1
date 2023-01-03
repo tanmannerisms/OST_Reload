@@ -15,6 +15,7 @@ class OstReload {
     }
 
     [void] start() {
+        clear
         Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
         $this.prompt()
     }
@@ -28,7 +29,7 @@ class OstReload {
             $this.deleteOst()
 	    }
 	    elseif (($bool -eq 'n') -or ($bool -eq 'no')) {
-    		$this.getUserOptions()
+            Write-Host $this.getUserOptions()
 	    }
 	    else {
 		    Write-Host "Oops, wrong option. Try again."
@@ -71,18 +72,24 @@ class OstReload {
     }
     
     hidden [string[]] getUserOptions() {
-        [int]$menuCount = 0
+        clear
 
-        for ($i = 0; $i -lt $this.localUsers.Length; $i++) {
-            if (($this.localUsers[$i] -eq $this.currentUser) -or ([OstReload]::exemptUsers -contains $this.localUsers[$i])) {
-                continue
+        [int]$menuCount = 0
+        [string[]]$userOptions = @(
+            [string]$user = 'null'
+
+            for ($i = 0; $i -lt $this.localUsers.Length; $i++) {
+                if (($this.localUsers[$i] -eq $this.currentUser) -or ([OstReload]::exemptUsers -contains $this.localUsers[$i])) {
+                    continue
+                }
+                else {
+                    $user = '[' + $menuCount + ']' + $this.localUsers[$i]
+                    $menuCount++
+                    $user
+                }
             }
-            else {
-                Write-Host '['$menuCount ']' $this.localUsers[$i]
-                $menuCount++
-            }
-        }
-        return $this.localUsers
+        )
+        return $userOptions
     }
 }
 
