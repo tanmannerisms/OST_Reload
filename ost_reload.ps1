@@ -74,7 +74,7 @@ class OstReload {
         [int]$menuCount = 0
 
         for ($i = 0; $i -lt $this.localUsers.Length; $i++) {
-            if ($this.localUsers[$i] -eq $this.currentUser) {
+            if (($this.localUsers[$i] -eq $this.currentUser) -or ([OstReload]::exemptUsers -contains $this.localUsers[$i])) {
                 continue
             }
             else {
