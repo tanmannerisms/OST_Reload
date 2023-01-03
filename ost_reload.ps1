@@ -75,11 +75,12 @@ class OstReload {
                 
             }
         }
+        return $this.localUsers
     }
 }
 
 [OstReload]$session = [OstReload]::new()
-$session.setCurrUser()
+$session.start()
 
 
 ## $session.start()
