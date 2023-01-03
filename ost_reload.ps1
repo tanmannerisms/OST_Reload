@@ -114,8 +114,15 @@ class OstReload {
     }
 
     static [void] printMenu([string[]]$menuOptions) {
-        foreach ($option in [OstReload]::makeMenu($menuOptions)) {
-            Write-Host $option
+        if ($menuOptions.length -gt 0) {
+            foreach ($option in [OstReload]::makeMenu($menuOptions)) {
+                Write-Host $option
+            }
+        }
+        else {
+            Write-Host "The list of other possible users that you could select is empty.`nPlease take a look at C:\Users to verify that the user you are looking for exists on this machine.`nIf it does, please take a screenshot and contact tmills@clydeinc.com"
+            Start-Sleep -Seconds 15
+            exit
         }
     }
 
