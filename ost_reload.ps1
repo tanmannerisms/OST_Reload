@@ -24,14 +24,14 @@ class OstReload : Session {
         $this.addExemptUsers($this.localAdmins)
         $this.applicableUserList = $this.getUserOptions()
     }
-
+########## Instance Methods ##########
     [void] start() {
         $this.exemptMachineName()
         Clear-Host
         $this.prompt()
     }
 
-    hidden [void] addExemptUsers([string]$exemptionAddition) {
+    hidden [void] addExemptUser([string]$exemptionAddition) {
         $this.exemptUsers += $exemptionAddition
     }
 
@@ -76,16 +76,8 @@ class OstReload : Session {
         Get-ChildItem -Filter $ostFile | Rename-Item -NewName {$_.Name -replace "^", "OLD - "}
         [OstReload]::startOutlook()
     }
-
-    static [void] startOutlook() {
-        Start-Process Outlook.exe
-    }
-
-    static [void] stopOutlook() {
-        Stop-Process -Name "Outlook" -Force
-    }
     
-############### Start Getters ###############
+    ##### Start Getters #####
 
     hidden [string] getCurrentUser() {
 	    return $this.currentUser
@@ -106,6 +98,9 @@ class OstReload : Session {
         )
         return $userOptions
     }
+    ##### End Getters #####
+
+########## Static Methods ##########
 
     static [int] getSelection([string[]]$menuOptions) {
         [OstReload]::printMenu($menuOptions)
@@ -118,8 +113,6 @@ class OstReload : Session {
         }
         return $answer
     }
-
-################ End Getters ###########################
 
     hidden static [string[]] makeMenu([string[]]$menuItems) {
         [int]$i = 0
@@ -152,6 +145,14 @@ class OstReload : Session {
             return $true
         }
         else { return $false }
+    }
+
+    static [void] startOutlook() {
+        Start-Process Outlook.exe
+    }
+
+    static [void] stopOutlook() {
+        Stop-Process -Name "Outlook" -Force
     }
 
     hidden [void] printCurrentUser() {
