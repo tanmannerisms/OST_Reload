@@ -1,17 +1,23 @@
-
-class OstReload {
-    static [string[]] $exemptUsers = "Administrator", "AzureAdmin", "LogMeInRemoteUser", "Public", "gblackburnadmin"
-
+class Session {
     hidden [string]$machineName 
     hidden [string] $currentUser 
     hidden [string[]]$localUsers
+
+    Session() {
+        $this.currentUser = ((Get-CimInstance -ClassName Win32_ComputerSystem).Username).Split('\')[1]
+        $this.machineName = (Get-CimInstance -ClassName Win32_ComputerSystem).Name
+        $this.localUsers = @((Get-ChildItem C:\Users).Name)
+    }
+}
+
+class OstReload : Session {
+    static [string[]] $exemptUsers = "Administrator", "AzureAdmin", "LogMeInRemoteUser", "Public", "gblackburnadmin"
+
     hidden [string[]]$userList
 
     ## Constructor ##
     OstReload() {
-        $this.currentUser = ((Get-CimInstance -ClassName Win32_ComputerSystem).Username).Split('\')[1]
-        $this.machineName = (Get-CimInstance -ClassName Win32_ComputerSystem).Name
-        $this.localUsers = @((Get-ChildItem C:\Users).Name)
+
     }
 
     [void] start() {
