@@ -10,6 +10,10 @@ class Session {
         $this.localUsers = @((Get-ChildItem C:\Users).Name)
         $this.localAdmins = "Administrator", "AzureAdmin", "LogMeInRemoteUser"
     }
+
+    hidden [void] printCurrentUser() {
+        Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
+    }
 }
 
 class OstReload : Session {
@@ -39,10 +43,6 @@ class OstReload : Session {
         foreach ($item in $exemptionAdditions) {
             $this.exemptUsers += $item
         }
-    }
-    
-    hidden [void] printCurrentUser() {
-        Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
     }
 
     hidden [void] exemptMachineName() {
