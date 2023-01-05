@@ -2,21 +2,26 @@ class Session {
     hidden [string]$machineName 
     hidden [string] $currentUser 
     hidden [string[]]$localUsers
+    hidden [string[]]$localAdmins
 
     Session() {
         $this.currentUser = ((Get-CimInstance -ClassName Win32_ComputerSystem).Username).Split('\')[1]
         $this.machineName = (Get-CimInstance -ClassName Win32_ComputerSystem).Name
         $this.localUsers = @((Get-ChildItem C:\Users).Name)
+        $this.localAdmins = "Administrator", "AzureAdmin", "LogMeInRemoteUser"
     }
 }
 
 class OstReload : Session {
+    static hidden [string[]]$exemptionArray = "Public", "gblackburnadmin"
+
     hidden [string[]]$exemptUsers 
     hidden [string[]]$applicableUserList
 
     ## Constructor ##
     OstReload() {
-        $this.exemptUsers = "Administrator", "AzureAdmin", "LogMeInRemoteUser", "Public", "gblackburnadmin"
+        $this.exemptUsers = [OstReload]::exemptionArray
+        $this.addExemptUsers($this.localAdmins)
         $this.applicableUserList = $this.getUserOptions()
     }
 
@@ -24,6 +29,16 @@ class OstReload : Session {
         $this.exemptMachineName()
         Clear-Host
         $this.prompt()
+    }
+
+    hidden [void] addExemptUsers([string]$exemptionAddition) {
+        $this.exemptUsers += $exemptionAddition
+    }
+
+    hidden [void] addExemptUsers([string[]]$exemptionAdditions) {
+        foreach ($item in $exemptionAdditions) {
+            $this.exemptUsers += $item
+        }
     }
    
     hidden [void] prompt() {
