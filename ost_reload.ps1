@@ -40,6 +40,15 @@ class OstReload : Session {
             $this.exemptUsers += $item
         }
     }
+    
+    hidden [void] printCurrentUser() {
+        Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
+    }
+
+    hidden [void] exemptMachineName() {
+        $tempName = $this.machineName + '$'
+        $this.exemptUsers += $tempName
+    }
    
     hidden [void] prompt() {
         $this.printCurrentUser()
@@ -62,7 +71,6 @@ class OstReload : Session {
             $this.start()
         }
     }
-
 
     hidden [void] deleteOst() {
         [string]$dir = 'C:\Users\' + $this.currentUser + '\Appdata\Local\Microsoft\Outlook'
@@ -153,15 +161,6 @@ class OstReload : Session {
 
     static [void] stopOutlook() {
         Stop-Process -Name "Outlook" -Force
-    }
-
-    hidden [void] printCurrentUser() {
-        Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
-    }
-
-    hidden [void] exemptMachineName() {
-        $tempName = $this.machineName + '$'
-        $this.exemptUsers += $tempName
     }
 }
 
