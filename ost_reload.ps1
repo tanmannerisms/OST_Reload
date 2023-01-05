@@ -11,13 +11,13 @@ class Session {
 }
 
 class OstReload : Session {
-    static [string[]] $exemptUsers = "Administrator", "AzureAdmin", "LogMeInRemoteUser", "Public", "gblackburnadmin"
-
-    hidden [string[]]$userList
+    hidden [string[]]$exemptUsers 
+    hidden [string[]]$applicableUserList
 
     ## Constructor ##
     OstReload() {
-
+        $this.exemptUsers = "Administrator", "AzureAdmin", "LogMeInRemoteUser", "Public", "gblackburnadmin"
+        $this.applicableUserList = $this.getUserOptions()
     }
 
     [void] start() {
@@ -36,9 +36,9 @@ class OstReload : Session {
             $this.deleteOst()
 	    }
 	    elseif (($bool -eq 'n') -or ($bool -eq 'no')) {
-            [OstReload]::exemptUsers += $this.currentUser
-            $this.userList = $this.getUserOptions()
-            $this.currentUser = $this.userList[[OstReload]::getSelection($this.userList)]
+            $this.exemptUsers += $this.currentUser
+            $this.applicableUserList = $this.getUserOptions()
+            $this.currentUser = $this.applicableUserList[[OstReload]::getSelection($this.applicableUserList)]
             $this.printCurrentUser()
             $this.deleteOst()
 	    }
@@ -81,7 +81,7 @@ class OstReload : Session {
 
         [string[]]$userOptions = @(
             for ($i = 0; $i -lt $this.localUsers.Length; $i++) {
-                if ([OstReload]::exemptUsers -contains $this.localUsers[$i]) {
+                if ($this.exemptUsers -contains $this.localUsers[$i]) {
                     continue
                 }
                 else {
@@ -145,7 +145,7 @@ class OstReload : Session {
 
     hidden [void] exemptMachineName() {
         $tempName = $this.machineName + '$'
-        [OstReload]::exemptUsers += $tempName
+        $this.exemptUsers += $tempName
     }
 }
 
