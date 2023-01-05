@@ -47,7 +47,7 @@ class OstReload : Session {
 
     hidden [void] exemptMachineName() {
         $tempName = $this.machineName + '$'
-        $this.exemptUsers += $tempName
+        $this.addExemptUser($tempName)
     }
    
     hidden [void] prompt() {
