@@ -25,32 +25,27 @@ class OstReload : Session {
     ## Constructor ##
     OstReload() {
         $this.exemptUsers = [OstReload]::exemptionArray
-        $this.addExemptUsers($this.localAdmins)
-        $this.applicableUserList = $this.getUserOptions()
+        $this.addExemptUser($this.localAdmins)
+        $this.addExemptUser("$($this.machineName)$")
     }
 ########## Instance Methods ##########
     [void] start() {
-        $this.exemptMachineName()
         Clear-Host
         $this.prompt()
     }
 
-    hidden [void] addExemptUser([string]$exemptionAddition) {
-        $this.exemptUsers += $exemptionAddition
+    hidden [void] addExemptUser([string]$exemptUser) {
+        $this.exemptUsers += $exemptUser
     }
 
-    hidden [void] addExemptUsers([string[]]$exemptionAdditions) {
-        foreach ($item in $exemptionAdditions) {
+    hidden [void] addExemptUser([string[]]$exemptUser) {
+        foreach ($item in $exemptUser) {
             $this.exemptUsers += $item
         }
     }
-
-    hidden [void] exemptMachineName() {
-        $tempName = $this.machineName + '$'
-        $this.addExemptUser($tempName)
-    }
    
     hidden [void] prompt() {
+        Clear-Host
         $this.printCurrentUser()
 	    Write-Host "Is this the correct user? Enter y/n"
 	    $bool = Read-Host
@@ -60,11 +55,10 @@ class OstReload : Session {
             $this.deleteOst()
 	    }
 	    elseif (($bool -eq 'n') -or ($bool -eq 'no')) {
-            $this.exemptUsers += $this.currentUser
+            $this.addExemptUser($this.currentUser)
             $this.applicableUserList = $this.getUserOptions()
             $this.currentUser = $this.applicableUserList[[OstReload]::getSelection($this.applicableUserList)]
-            $this.printCurrentUser()
-            $this.deleteOst()
+            $this.prompt()
 	    }
 	    else {
 		    Write-Host "Oops, wrong option. Try again."
