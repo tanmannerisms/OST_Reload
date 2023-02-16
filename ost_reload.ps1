@@ -71,12 +71,12 @@ class OstReload : Session {
         [string]$backup = "OLD - " + $this.currentUser + "*"
         [string]$ostFile = $this.currentUser + '*'
 
-        [OstReload]::stopOutlook()
+        [OstReload]::stopOffice()
         Set-Location $dir
         Get-ChildItem -Filter $backup | Remove-Item
         Start-Sleep -m 1000
         Get-ChildItem -Filter $ostFile | Rename-Item -NewName {$_.Name -replace "^", "OLD - "}
-        [OstReload]::startOutlook()
+        [OstReload]::startOffice()
     }
     
     ##### Start Getters #####
@@ -149,12 +149,22 @@ class OstReload : Session {
         else { return $false }
     }
 
-    static [void] startOutlook() {
+    static [void] startOffice() {
         Start-Process Outlook.exe
     }
 
-    static [void] stopOutlook() {
-        Stop-Process -Name "Outlook" -Force
+    static [void] stopOffice() {
+        [String[]]$processes =  "OUTLOOK", "EXCEL", "WINWORD", "POWERPNT", "ONENOTE", "MSPUB", "MSACCESS"
+        Write-Host "All Office365 apps are about to stop. Please make sure everything is saved and then hit enter."
+        Read-Host
+        foreach($process in $processes) {
+            if ( Get-Process -Name $process -ErrorAction SilentlyContinue ) {
+                Stop-Process -Name $process -Force -ErrorAction Stop
+            }
+            else {
+                continue
+            }
+        }
     }
 }
 
