@@ -123,22 +123,10 @@ class OstReload : Session {
         return $userOptions
     }
     ##### End Getters #####
+}
 
-########## Static Methods ##########
-    ## this shouldn't have the printMenu call in here
-    static [int] getSelection([string[]]$menuOptions) {
-        [OstReload]::printMenu($menuOptions)
-        [int]$answer = Read-Host 'Select an option from above by entering the number associated with the desired selection (default is 0)'
-        if ([OstReload]::validateMenuSelection($answer, $menuOptions) -eq $false) {
-            Clear-Host
-            Write-Host "Let's try that again..."
-            Start-Sleep -m 500
-            return [OstReload]::getSelection($menuOptions)
-        }
-        return $answer
-    }
-
-    hidden static [string[]] makeMenu([string[]]$menuItems) {
+class Menu {
+    static [string[]] makeMenu([string[]]$menuItems) {
         [int]$i = 0
         [string[]]$menu = @(
             foreach ($item in $menuItems) {
@@ -151,17 +139,29 @@ class OstReload : Session {
         return $menu
     }
 
-    static [void] printMenu([string[]]$menuOptions) {
-        if ($menuOptions.length -gt 0) {
-            foreach ($option in [OstReload]::makeMenu($menuOptions)) {
+    static [void] printMenu([string[]]$menuItems) {
+        if ($menuItems.length -gt 0) {
+            foreach ($option in [OstReload]::makeMenu($menuItems)) {
                 Write-Host $option
             }
         }
         else {
-            Write-Host "The list of other possible users that you could select is empty.`nPlease take a look at C:\Users to verify that the user you are looking for exists on this machine.`nIf it does, please take a screenshot and contact tmills@clydeinc.com"
+            Write-Host "The list of other possible options that you could select is empty.`nPlease contact tmills@clydeinc.com if you believe this to be incorrect."
             Start-Sleep -Seconds 15
             exit
         }
+    }
+
+    static [int] getSelection([string[]]$menuOptions) {
+        [OstReload]::printMenu($menuOptions)
+        [int]$answer = Read-Host 'Select an option from above by entering the number associated with the desired selection (default is 0)'
+        if ([OstReload]::validateMenuSelection($answer, $menuOptions) -eq $false) {
+            Clear-Host
+            Write-Host "Let's try that again..."
+            Start-Sleep -m 500
+            return [OstReload]::getSelection($menuOptions)
+        }
+        return $answer
     }
 
     static [boolean] validateMenuSelection([int]$answer, [string[]]$menuOptions) {
