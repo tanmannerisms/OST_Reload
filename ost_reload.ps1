@@ -79,6 +79,25 @@ class OstReload : Session {
         Get-ChildItem -Filter $ostFile | Rename-Item -NewName {$_.Name -replace "^", "OLD - "}
         [OstReload]::startOffice()
     }
+    [void] startOffice() {
+        foreach ($process in $this.runningOfficeApps) {
+            Start-Process $process
+        }
+    }
+
+    [void] stopOffice() {
+        [String[]]$processes =  "OUTLOOK", "EXCEL", "WINWORD", "POWERPNT", "ONENOTE", "MSPUB", "MSACCESS"
+        Read-Host
+        foreach($process in $processes) {
+            if ( Get-Process -Name $process -ErrorAction SilentlyContinue ) {
+                $this.runningOfficeApps += $process
+                Stop-Process -Name $process -Force -ErrorAction Stop
+            }
+            else {
+                continue
+            }
+        }
+    }
     
     ##### Start Getters #####
 
@@ -148,26 +167,6 @@ class OstReload : Session {
             return $true
         }
         else { return $false }
-    }
-
-    [void] startOffice() {
-        foreach ($process in $this.runningOfficeApps) {
-            Start-Process $process
-        }
-    }
-
-    [void] stopOffice() {
-        [String[]]$processes =  "OUTLOOK", "EXCEL", "WINWORD", "POWERPNT", "ONENOTE", "MSPUB", "MSACCESS"
-        Read-Host
-        foreach($process in $processes) {
-            if ( Get-Process -Name $process -ErrorAction SilentlyContinue ) {
-                $this.runningOfficeApps += $process
-                Stop-Process -Name $process -Force -ErrorAction Stop
-            }
-            else {
-                continue
-            }
-        }
     }
 }
 
