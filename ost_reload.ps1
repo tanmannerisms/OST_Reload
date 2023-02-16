@@ -31,8 +31,10 @@ class OstReload : Session {
     }
 ########## Instance Methods ##########
     [void] start() {
+        $initialDirectory = Get-Location
         Clear-Host
         $this.prompt()
+        Set-Location $initialDirectory
     }
 
     hidden [void] addExemptUser([string]$exemptUser) {
@@ -62,8 +64,9 @@ class OstReload : Session {
             $this.prompt()
 	    }
 	    else {
+            Clear-Host
 		    Write-Host "Oops, wrong option. Try again."
-            $this.start()
+            $this.prompt()
         }
     }
 
