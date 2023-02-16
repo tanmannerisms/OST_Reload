@@ -130,7 +130,7 @@ class Menu {
     hidden [String[]]$menu
 
     [void] setMenuOptions([string[]]$menuItems) {
-        $this.menuOptions = $menuItems
+        $this.menuItems = $menuItems
         $this.makeMenu
     }
 
@@ -158,20 +158,19 @@ class Menu {
         }
     }
 
-    static [int] getSelection([string[]]$menuOptions) {
-        [Menu]::printMenu($menuOptions)
+    [int] getSelection() {
         [int]$answer = Read-Host 'Select an option from above by entering the number associated with the desired selection (default is 0)'
-        if ([Menu]::validateMenuSelection($answer, $menuOptions) -eq $false) {
+        if ($this.validateMenuSelection($answer) -eq $false) {
             Clear-Host
             Write-Host "Let's try that again..."
             Start-Sleep -m 500
-            return [Menu]::getSelection($menuOptions)
+            return $this.getSelection()
         }
         return $answer
     }
 
-    static [boolean] validateMenuSelection([int]$answer, [string[]]$menuOptions) {
-        if (($answer -lt $menuOptions.Length) -and ($answer -ge 0)) {
+    [boolean] validateMenuSelection([int]$answer) {
+        if (($answer -lt $this.menu.Length) -and ($answer -ge 0)) {
             return $true
         }
         else { return $false }
