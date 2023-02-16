@@ -136,11 +136,13 @@ class Menu {
 
     [void] makeMenu() {
         [int]$i = 0
-        foreach ($item in $this.menuItems) {
-            $item = '[' + $i + '] ' + $item
-            $item
-            $i++
-        }
+        $this.menu = @(
+            foreach ($item in $this.menuItems) {
+                $item = '[' + $i + '] ' + $item
+                $item
+                $i++
+            }
+        )
     }
 
     [void] printMenu() {
