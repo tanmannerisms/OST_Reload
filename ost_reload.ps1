@@ -111,12 +111,12 @@ class OstReload : Session {
         Clear-Host
 
         [string[]]$userOptions = @(
-            for ($i = 0; $i -lt $this.localUsers.Length; $i++) {
-                if ($this.exemptUsers -contains $this.localUsers[$i]) {
+            foreach ($user in $this.localUsers) {
+                if ($this.exemptUsers -contains $user) {
                     continue
                 }
                 else {
-                    $this.localUsers[$i]
+                    $user
                 }
             }
         )
@@ -125,7 +125,7 @@ class OstReload : Session {
     ##### End Getters #####
 
 ########## Static Methods ##########
-
+    ## this shouldn't have the printMenu call in here
     static [int] getSelection([string[]]$menuOptions) {
         [OstReload]::printMenu($menuOptions)
         [int]$answer = Read-Host 'Select an option from above by entering the number associated with the desired selection (default is 0)'
