@@ -14,6 +14,10 @@ class Session {
     hidden [void] printCurrentUser() {
         Write-Host "Current user set to:" ($this.getCurrentUser()).toUpper()
     }
+
+    [string] getCurrentUser() {
+	    return $this.currentUser
+    }
 }
 
 class OstReload : Session {
@@ -102,10 +106,6 @@ class OstReload : Session {
     }
     
     ##### Start Getters #####
-
-    hidden [string] getCurrentUser() {
-	    return $this.currentUser
-    }
     
     hidden [string[]] getUserOptions() {
         Clear-Host
