@@ -72,12 +72,12 @@ class OstReload : Session {
         [string]$backup = "OLD - " + $this.currentUser + "*"
         [string]$ostFile = $this.currentUser + '*'
 
-        [OstReload]::stopOffice()
+        $this.stopOffice()
         Set-Location $dir
         Get-ChildItem -Filter $backup | Remove-Item
         Start-Sleep -m 1000
         Get-ChildItem -Filter $ostFile | Rename-Item -NewName {$_.Name -replace "^", "OLD - "}
-        [OstReload]::startOffice()
+        $this.startOffice()
     }
     [void] startOffice() {
         foreach ($process in $this.runningOfficeApps) {
@@ -87,7 +87,6 @@ class OstReload : Session {
 
     [void] stopOffice() {
         [String[]]$processes =  "OUTLOOK", "EXCEL", "WINWORD", "POWERPNT", "ONENOTE", "MSPUB", "MSACCESS"
-        Read-Host
         foreach($process in $processes) {
             if ( Get-Process -Name $process -ErrorAction SilentlyContinue ) {
                 $this.runningOfficeApps += $process
