@@ -21,6 +21,7 @@ class OstReload : Session {
 
     hidden [string[]]$exemptUsers 
     hidden [string[]]$applicableUserList
+    hidden [String[]]$runningOfficeApps
 
     ## Constructor ##
     OstReload() {
@@ -149,16 +150,18 @@ class OstReload : Session {
         else { return $false }
     }
 
-    static [void] startOffice() {
-        Start-Process Outlook.exe
+    [void] startOffice() {
+        foreach ($process in $this.runningOfficeApps) {
+            Start-Process $process
+        }
     }
 
-    static [void] stopOffice() {
+    [void] stopOffice() {
         [String[]]$processes =  "OUTLOOK", "EXCEL", "WINWORD", "POWERPNT", "ONENOTE", "MSPUB", "MSACCESS"
-        Write-Host "All Office365 apps are about to stop. Please make sure everything is saved and then hit enter."
         Read-Host
         foreach($process in $processes) {
             if ( Get-Process -Name $process -ErrorAction SilentlyContinue ) {
+                $this.runningOfficeApps += $process
                 Stop-Process -Name $process -Force -ErrorAction Stop
             }
             else {
