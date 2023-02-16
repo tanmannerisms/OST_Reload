@@ -126,22 +126,26 @@ class OstReload : Session {
 }
 
 class Menu {
-    static [string[]] makeMenu([string[]]$menuItems) {
-        [int]$i = 0
-        [string[]]$menu = @(
-            foreach ($item in $menuItems) {
-                $item = '[' + $i + '] ' + $item
-                $item
-                $i++
-            }
-        )
+    hidden [String[]]$menuItems
+    hidden [String[]]$menu
 
-        return $menu
+    [void] setMenuOptions([string[]]$menuItems) {
+        $this.menuOptions = $menuItems
+        $this.makeMenu
+    }
+
+    [void] makeMenu() {
+        [int]$i = 0
+        foreach ($item in $this.menuItems) {
+            $item = '[' + $i + '] ' + $item
+            $item
+            $i++
+        }
     }
 
     static [void] printMenu([string[]]$menuItems) {
         if ($menuItems.length -gt 0) {
-            foreach ($option in [OstReload]::makeMenu($menuItems)) {
+            foreach ($option in [Menu]::makeMenu($menuItems)) {
                 Write-Host $option
             }
         }
@@ -153,13 +157,13 @@ class Menu {
     }
 
     static [int] getSelection([string[]]$menuOptions) {
-        [OstReload]::printMenu($menuOptions)
+        [Menu]::printMenu($menuOptions)
         [int]$answer = Read-Host 'Select an option from above by entering the number associated with the desired selection (default is 0)'
-        if ([OstReload]::validateMenuSelection($answer, $menuOptions) -eq $false) {
+        if ([Menu]::validateMenuSelection($answer, $menuOptions) -eq $false) {
             Clear-Host
             Write-Host "Let's try that again..."
             Start-Sleep -m 500
-            return [OstReload]::getSelection($menuOptions)
+            return [Menu]::getSelection($menuOptions)
         }
         return $answer
     }
