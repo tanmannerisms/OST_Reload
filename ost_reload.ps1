@@ -143,9 +143,9 @@ class Menu {
         }
     }
 
-    static [void] printMenu([string[]]$menuItems) {
-        if ($menuItems.length -gt 0) {
-            foreach ($option in [Menu]::makeMenu($menuItems)) {
+    [void] printMenu() {
+        if ($this.menu.length -gt 0) {
+            foreach ($option in $this.menu) {
                 Write-Host $option
             }
         }
