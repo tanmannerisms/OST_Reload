@@ -3,12 +3,14 @@ class Session {
     hidden [string] $currentUser 
     hidden [string[]]$localUsers
     hidden [string[]]$localAdmins
+    hidden [Menu]$menu
 
     Session() {
         $this.currentUser = ((Get-CimInstance -ClassName Win32_ComputerSystem).Username).Split('\')[1]
         $this.machineName = (Get-CimInstance -ClassName Win32_ComputerSystem).Name
         $this.localUsers = @((Get-ChildItem C:\Users).Name)
         $this.localAdmins = "Administrator", "AzureAdmin", "LogMeInRemoteUser"
+        $this.menu = [Menu]::new()
     }
 
     hidden [void] printCurrentUser() {
@@ -64,7 +66,9 @@ class OstReload : Session {
 	    elseif (($bool -eq 'n') -or ($bool -eq 'no')) {
             $this.addExemptUser($this.currentUser)
             $this.applicableUserList = $this.getUserOptions()
-            $this.currentUser = $this.applicableUserList[[OstReload]::getSelection($this.applicableUserList)]
+            $this.menu.setMenuOptions($this.applicableUserList)
+            $this.menu.printMenu
+            $this.currentUser = $this.applicableUserList[$this.menu.getSelection]
             $this.prompt()
 	    }
 	    else {
@@ -134,7 +138,7 @@ class Menu {
         $this.makeMenu
     }
 
-    [void] makeMenu() {
+    hidden [void] makeMenu() {
         [int]$i = 0
         $this.menu = @(
             foreach ($item in $this.menuItems) {
@@ -169,7 +173,7 @@ class Menu {
         return $answer
     }
 
-    [boolean] validateMenuSelection([int]$answer) {
+    hidden [boolean] validateMenuSelection([int]$answer) {
         if (($answer -lt $this.menu.Length) -and ($answer -ge 0)) {
             return $true
         }
