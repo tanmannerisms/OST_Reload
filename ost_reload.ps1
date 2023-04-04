@@ -3,14 +3,12 @@ class Session {
     hidden [string] $currentUser 
     hidden [string[]]$localUsers
     hidden [string[]]$localAdmins
-    hidden [Menu]$menu
 
     Session() {
         $this.currentUser = ((Get-CimInstance -ClassName Win32_ComputerSystem).Username).Split('\')[1]
         $this.machineName = (Get-CimInstance -ClassName Win32_ComputerSystem).Name
         $this.localUsers = @((Get-ChildItem C:\Users).Name)
         $this.localAdmins = "Administrator", "AzureAdmin", "LogMeInRemoteUser"
-        $this.menu = [Menu]::new()
     }
 
     hidden [void] printCurrentUser() {
@@ -64,11 +62,15 @@ class OstReload : Session {
             $this.deleteOst()
 	    }
 	    elseif (($bool -eq 'n') -or ($bool -eq 'no')) {
+            Clear-Host
+
             $this.addExemptUser($this.currentUser)
-            $this.applicableUserList = $this.getUserOptions()
-            $this.menu.setMenuOptions($this.applicableUserList)
-            $this.menu.printMenu
-            $this.currentUser = $this.applicableUserList[$this.menu.getSelection]
+            [String[]]$menuOptions = $this.getUserOptions()
+
+            [Menu]$menu = [Menu]::new($menuOptions)
+            $menu.printMenu()
+            $this.currentUser = $menuOptions[$menu.getSelection()]
+
             $this.prompt()
 	    }
 	    else {
@@ -90,6 +92,7 @@ class OstReload : Session {
         Get-ChildItem -Filter $ostFile | Rename-Item -NewName {$_.Name -replace "^", "OLD - "}
         $this.startOffice()
     }
+
     [void] startOffice() {
         foreach ($process in $this.runningOfficeApps) {
             Start-Process $process
@@ -112,8 +115,6 @@ class OstReload : Session {
     ##### Start Getters #####
     
     hidden [string[]] getUserOptions() {
-        Clear-Host
-
         [string[]]$userOptions = @(
             foreach ($user in $this.localUsers) {
                 if ($this.exemptUsers -contains $user) {
@@ -133,9 +134,9 @@ class Menu {
     hidden [String[]]$menuItems
     hidden [String[]]$menu
 
-    [void] setMenuOptions([string[]]$menuItems) {
+    Menu([string[]]$menuItems) {
         $this.menuItems = $menuItems
-        $this.makeMenu
+        $this.makeMenu()
     }
 
     hidden [void] makeMenu() {
@@ -157,7 +158,7 @@ class Menu {
         }
         else {
             Write-Host "The list of other possible options that you could select is empty.`nPlease contact tmills@clydeinc.com if you believe this to be incorrect."
-            Start-Sleep -Seconds 15
+            Start-Sleep -Seconds 10
             exit
         }
     }
@@ -165,7 +166,6 @@ class Menu {
     [int] getSelection() {
         [int]$answer = Read-Host 'Select an option from above by entering the number associated with the desired selection (default is 0)'
         if ($this.validateMenuSelection($answer) -eq $false) {
-            Clear-Host
             Write-Host "Let's try that again..."
             Start-Sleep -m 500
             return $this.getSelection()
@@ -173,7 +173,7 @@ class Menu {
         return $answer
     }
 
-    hidden [boolean] validateMenuSelection([int]$answer) {
+   hidden [boolean] validateMenuSelection([int]$answer) {
         if (($answer -lt $this.menu.Length) -and ($answer -ge 0)) {
             return $true
         }
