@@ -100,11 +100,49 @@ class OstReload : Session {
     }
 
     [void] stopOffice() {
-        [String[]]$processes =  "OUTLOOK", "EXCEL", "WINWORD", "POWERPNT", "ONENOTE", "MSPUB", "MSACCESS"
-        foreach($process in $processes) {
-            if ( Get-Process -Name $process -ErrorAction SilentlyContinue ) {
-                $this.runningOfficeApps += $process
-                Stop-Process -Name $process -Force -ErrorAction Stop
+        $officeProcesses = @{ 
+            word = "WINWORD"; 
+            excel = "EXCEL"; 
+            outlook = "OUTLOOK"; 
+            onenote = "ONENOTE"; 
+            pub = "MSPUB"; 
+            access = "MSACCESS";
+        }
+
+        $officeAppProgId = @{
+            word = "Word.Application";
+            excel = "Excel.Application";
+            outlook = "Outlook.Application";
+            onenote = "OneNote.Application";
+            pub = "Publisher.Application";
+            access = "Access.Application";
+        }
+
+        ## [String[]]$processes =  "OUTLOOK", "EXCEL", "WINWORD", "POWERPNT", "ONENOTE", "MSPUB", "MSACCESS"
+
+        foreach($key in $officeProcesses.Keys) {
+            if ( Get-Process -Name $officeProcesses.$key -ErrorAction SilentlyContinue ) {
+                $this.runningOfficeApps += $key
+
+                ## Gets the COM object instance of the running application
+                $runningApp = [System.Runtime.InteropServices.Marshal]::GetActiveObject($officeAppProgId.$key)
+
+                ## Gets a list of every document open in the running application
+                ## then saves and closes it
+                $openDocs = $runningApp.Documents
+                foreach ($doc in $openDocs) {
+                    $name = $doc.Name
+                    try {
+                        $doc.Close(-1)
+                        Write-Host "$name saved successfully"
+                    } 
+                    catch {
+                        Write-Host "$name not saved. "
+                    }
+                    
+                }
+
+                Stop-Process -Name $officeProcesses.$key -Force -ErrorAction Stop
             }
             else {
                 continue
